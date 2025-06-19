@@ -65,6 +65,9 @@ FIN-RAG/
 └── ...
 ```
 
+## Example
+![Example Image](imgs/example.png)
+
 ## License
 
 MIT License
