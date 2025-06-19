@@ -74,4 +74,3 @@ MIT License
 - [HuggingFace Transformers](https://huggingface.co/)
 - [FAISS](https://github.com/facebookresearch/faiss)
 - [Streamlit](https://streamlit.io/)
--
