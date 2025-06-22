@@ -10,6 +10,21 @@ from langchain_community.llms import HuggingFacePipeline
 from langchain.schema import Document
 from transformers import AutoTokenizer, AutoModelForSeq2SeqLM, pipeline
 
+def preprocess_financial_text(text):
+    """
+    Preprocess financial text by replacing specific terms with standardized labels.
+
+    This makes embeddings and retrieval more effective by ensuring consistent terminology.
+    """
+    replacements = {
+        "foreign currency": "foreign_currency",
+        "international operations": "international_operations",
+        "currency risk": "currency_risk"
+    }
+    for k, v in replacements.items():
+        text = text.replace(k, v)
+    return text
+
 def rust_chunk_file(file_path, chunk_size=500):
     """
     Splits a file into chunks using a custom external Rust binary.
@@ -89,7 +104,8 @@ def main():
     """
 
     st.title("Financial RAG Assistant")
-    st.markdown("Ask questions about your financial documents like 10-Ks, earnings reports, or market summaries.")
+    st.markdown("Ask questions about your financial documents like 10-Ks, earnings reports, or market summaries.  This RAG" \
+    " assistant preprocesses text and is focused on financial documents, particularly risk factors and international operations.")
 
     uploaded_file = st.file_uploader("Upload a .txt financial document", type=["txt"])
 
@@ -99,7 +115,7 @@ def main():
             f.write(uploaded_file.read())
 
         raw_chunks = rust_chunk_file("temp_doc.txt")
-        docs = [Document(page_content=c) for c in raw_chunks]
+        docs = [Document(page_content=preprocess_financial_text(c), metadata={"section": "Risk Factors"}) for c in raw_chunks]
         retriever = embed_docs(docs)
         llm = load_llm()
         rag_chain = build_rag(retriever, llm)
